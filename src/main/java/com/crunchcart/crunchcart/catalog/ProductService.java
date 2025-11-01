@@ -24,7 +24,9 @@ public class ProductService {
                         product.getDescription(),
                         product.getPriceCents(),
                         product.getImageUrl(),
-                        product.getRating(),product.getCategoryId(),product.getCategoryName())).toList();
+                        product.getRating(),
+                        product.getCategory() != null ? product.getCategory().getId() : 0L,
+                        product.getCategory() != null ? product.getCategory().getName() : null)).toList();
     }
 
 }
