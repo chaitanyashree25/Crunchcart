@@ -29,8 +29,11 @@ public class ProductController {
     public Page<ProductDto> listProducts(
            @RequestParam(required = false) String category,
            @RequestParam(defaultValue = "0") int page,
-           @RequestParam(defaultValue = "12") int size
+           @RequestParam(defaultValue = "12") int size,
+           @RequestParam(defaultValue = "id") String sort,
+           @RequestParam(defaultValue = "desc") String direction,
+           @RequestParam(required = false) String q
     ){
-        return productService.getProducts(category,page,size);
+        return productService.getProducts(category,page,size,sort,direction,q);
     }
 }

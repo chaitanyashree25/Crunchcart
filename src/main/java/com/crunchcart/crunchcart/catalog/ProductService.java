@@ -32,12 +32,31 @@ public class ProductService {
                         product.getCategory() != null ? product.getCategory().getName() : null)).toList();
     }
 
-    public Page<ProductDto> getProducts(String categorySlug, int page, int size){
-        var pageable = PageRequest.of(page, size, Sort.by("id").descending());
+    public Page<ProductDto> getProducts(String categorySlug, int page, int size, String sortBy, String direction, String query){
 
-        var productPage = (categorySlug == null || categorySlug.isBlank())
-                ? productRepository.findAll(pageable)
-                : productRepository.findByCategory_Slug(categorySlug, pageable);
+        //Define sorting
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        var pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productPage;
+
+        //Apply filters
+
+        boolean hasQuery = query != null && !query.trim().isEmpty();
+
+        if(hasQuery){
+            productPage = (categorySlug == null || categorySlug.isBlank())
+                    ? productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query,query,pageable)
+                    : productRepository.findByCategory_SlugAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(categorySlug,query,query,pageable);
+        }else {
+
+            productPage = (categorySlug == null || categorySlug.isBlank())
+                    ? productRepository.findAll(pageable)
+                    : productRepository.findByCategory_Slug(categorySlug, pageable);
+        }
 
         return productPage.map(p -> new ProductDto(
                 p.getId(),
